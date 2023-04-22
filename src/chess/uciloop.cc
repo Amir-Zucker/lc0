@@ -63,39 +63,6 @@ const std::unordered_map<std::string, std::unordered_set<std::string>>
         {{"fen"}, {}},
 };
 
-std::pair<std::string, std::unordered_map<std::string, std::string>>
-ParseCommand(const std::string& line) {
-  std::unordered_map<std::string, std::string> params;
-  std::string* value = nullptr;
-
-  std::istringstream iss(line);
-  std::string token;
-  iss >> token >> std::ws;
-
-  // If empty line, return empty command.
-  if (token.empty()) return {};
-
-  const auto command = kKnownCommands.find(token);
-  if (command == kKnownCommands.end()) {
-    throw Exception("Unknown command: " + line);
-  }
-
-  std::string whitespace;
-  while (iss >> token) {
-    auto iter = command->second.find(token);
-    if (iter == command->second.end()) {
-      if (!value) throw Exception("Unexpected token: " + token);
-      *value += whitespace + token;
-      whitespace = " ";
-    } else {
-      value = &params[token];
-      iss >> std::ws;
-      whitespace = "";
-    }
-  }
-  return {command->first, params};
-}
-
 std::string GetOrEmpty(
     const std::unordered_map<std::string, std::string>& params,
     const std::string& key) {
@@ -143,6 +110,39 @@ void UciLoop::RunLoop() {
       SendResponse(std::string("error ") + ex.what());
     }
   }
+}
+
+std::pair<std::string, std::unordered_map<std::string, std::string>>
+UciLoop::ParseCommand(const std::string& line) {
+  std::unordered_map<std::string, std::string> params;
+  std::string* value = nullptr;
+
+  std::istringstream iss(line);
+  std::string token;
+  iss >> token >> std::ws;
+
+  // If empty line, return empty command.
+  if (token.empty()) return {};
+
+  const auto command = kKnownCommands.find(token);
+  if (command == kKnownCommands.end()) {
+    throw Exception("Unknown command: " + line);
+  }
+
+  std::string whitespace;
+  while (iss >> token) {
+    auto iter = command->second.find(token);
+    if (iter == command->second.end()) {
+      if (!value) throw Exception("Unexpected token: " + token);
+      *value += whitespace + token;
+      whitespace = " ";
+    } else {
+      value = &params[token];
+      iss >> std::ws;
+      whitespace = "";
+    }
+  }
+  return {command->first, params};
 }
 
 bool UciLoop::DispatchCommand(
