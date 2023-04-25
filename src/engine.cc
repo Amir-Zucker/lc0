@@ -322,6 +322,10 @@ EngineLoop::EngineLoop()
               std::bind(&UciLoop::SendBestMove, this, std::placeholders::_1),
               std::bind(&UciLoop::SendInfo, this, std::placeholders::_1)),
           options_.GetOptionsDict()) {
+  
+}
+
+void EngineLoop::Initialize() {
   engine_.PopulateOptions(&options_);
   options_.Add<StringOption>(kLogFileId);
 }
