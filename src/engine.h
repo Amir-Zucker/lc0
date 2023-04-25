@@ -119,7 +119,8 @@ class EngineController {
 class EngineLoop : public UciLoop {
  public:
   EngineLoop();
-
+  void Initialize();
+    
   void RunLoop() override;
   void CmdUci() override;
   void CmdIsReady() override;

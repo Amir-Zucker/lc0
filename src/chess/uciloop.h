@@ -86,7 +86,9 @@ class UciLoop {
   virtual void CmdPonderHit() { throw Exception("Not supported"); }
   virtual void CmdStart() { throw Exception("Not supported"); }
 
- private:
+  std::pair<std::string, std::unordered_map<std::string, std::string>>
+    ParseCommand(const std::string& line);
+    
   bool DispatchCommand(
       const std::string& command,
       const std::unordered_map<std::string, std::string>& params);
