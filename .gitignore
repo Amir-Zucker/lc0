@@ -11,7 +11,6 @@ CUDA_NN/
 lc0.xcodeproj/
 LC0VSProj/
 src/.vs/
-subprojects/*
 testdata/
 xcuserdata
 .clang-tidy
