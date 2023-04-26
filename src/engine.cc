@@ -335,7 +335,7 @@ void EngineLoop::RunLoop() {
   const auto options = options_.GetOptionsDict();
   Logging::Get().SetFilename(options.Get<std::string>(kLogFileId));
   if (options.Get<bool>(kPreload)) engine_.NewGame();
-  UciLoop::RunLoop();
+//  UciLoop::RunLoop();
 }
 
 void EngineLoop::CmdUci() {
