@@ -38,7 +38,7 @@
 #include "utils/logging.h"
 #include "version.h"
 
-int main(int argc, const char** argv) {
+int _main(int argc, const char** argv) {
   using namespace lczero;
   EscCodes::Init();
   LOGFILE << "Lc0 started.";
@@ -52,34 +52,34 @@ int main(int argc, const char** argv) {
 
     CommandLine::Init(argc, argv);
     CommandLine::RegisterMode("uci", "(default) Act as UCI engine");
-    CommandLine::RegisterMode("selfplay", "Play games with itself");
-    CommandLine::RegisterMode("benchmark", "Quick benchmark");
-    CommandLine::RegisterMode("backendbench",
-                              "Quick benchmark of backend only");
-    CommandLine::RegisterMode("leela2onnx", "Convert Leela network to ONNX.");
-    CommandLine::RegisterMode("onnx2leela",
-                              "Convert ONNX network to Leela net.");
-    CommandLine::RegisterMode("describenet",
-                              "Shows details about the Leela network.");
+//    CommandLine::RegisterMode("selfplay", "Play games with itself");
+//    CommandLine::RegisterMode("benchmark", "Quick benchmark");
+//    CommandLine::RegisterMode("backendbench",
+//                              "Quick benchmark of backend only");
+//    CommandLine::RegisterMode("leela2onnx", "Convert Leela network to ONNX.");
+//    CommandLine::RegisterMode("onnx2leela",
+//                              "Convert ONNX network to Leela net.");
+//    CommandLine::RegisterMode("describenet",
+//                              "Shows details about the Leela network.");
 
     if (CommandLine::ConsumeCommand("selfplay")) {
       // Selfplay mode.
-      SelfPlayLoop loop;
-      loop.RunLoop();
+//      SelfPlayLoop loop;
+//      loop.RunLoop();
     } else if (CommandLine::ConsumeCommand("benchmark")) {
       // Benchmark mode.
-      Benchmark benchmark;
-      benchmark.Run();
+//      Benchmark benchmark;
+//      benchmark.Run();
     } else if (CommandLine::ConsumeCommand("backendbench")) {
       // Backend Benchmark mode.
-      BackendBenchmark benchmark;
-      benchmark.Run();
+//      BackendBenchmark benchmark;
+//      benchmark.Run();
     } else if (CommandLine::ConsumeCommand("leela2onnx")) {
-      lczero::ConvertLeelaToOnnx();
+//      lczero::ConvertLeelaToOnnx();
     } else if (CommandLine::ConsumeCommand("onnx2leela")) {
-      lczero::ConvertOnnxToLeela();
+//      lczero::ConvertOnnxToLeela();
     } else if (CommandLine::ConsumeCommand("describenet")) {
-      lczero::DescribeNetworkCmd();
+//      lczero::DescribeNetworkCmd();
     } else {
       // Consuming optional "uci" mode.
       CommandLine::ConsumeCommand("uci");

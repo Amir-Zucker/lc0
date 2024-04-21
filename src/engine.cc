@@ -323,7 +323,8 @@ EngineLoop::EngineLoop()
               std::bind(&UciLoop::SendBestMove, this, std::placeholders::_1),
               std::bind(&UciLoop::SendInfo, this, std::placeholders::_1)),
           options_.GetOptionsDict()) {
-  
+              engine_.PopulateOptions(&options_);
+              options_.Add<StringOption>(kLogFileId);
 }
 
 void EngineLoop::Initialize() {
@@ -336,7 +337,7 @@ void EngineLoop::RunLoop() {
   const auto options = options_.GetOptionsDict();
   Logging::Get().SetFilename(options.Get<std::string>(kLogFileId));
   if (options.Get<bool>(kPreload)) engine_.NewGame();
-//  UciLoop::RunLoop();
+  UciLoop::RunLoop();
 }
 
 void EngineLoop::CmdUci() {
