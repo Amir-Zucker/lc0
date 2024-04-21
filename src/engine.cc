@@ -238,6 +238,7 @@ class PonderResponseTransformer : public TransformingUciResponder {
         if (ponder_info.score) ponder_info.score = -*ponder_info.score;
         if (ponder_info.depth > 1) ponder_info.depth--;
         if (ponder_info.seldepth > 1) ponder_info.seldepth--;
+        if (ponder_info.wdl) std::swap(ponder_info.wdl->w, ponder_info.wdl->l);
         ponder_info.pv.clear();
       }
       if (!info.pv.empty() && info.pv[0].as_string() == ponder_move_) {
@@ -298,7 +299,7 @@ void EngineController::Go(const GoParams& params) {
   search_ = std::make_unique<Search>(
       *tree_, network_.get(), std::move(responder),
       StringsToMovelist(params.searchmoves, tree_->HeadPosition().GetBoard()),
-      *move_start_time_, std::move(stopper), params.infinite || params.ponder,
+      *move_start_time_, std::move(stopper), params.infinite, params.ponder,
       options_, &cache_, syzygy_tb_.get());
 
   LOGFILE << "Timer started at "
@@ -322,7 +323,8 @@ EngineLoop::EngineLoop()
               std::bind(&UciLoop::SendBestMove, this, std::placeholders::_1),
               std::bind(&UciLoop::SendInfo, this, std::placeholders::_1)),
           options_.GetOptionsDict()) {
-  
+              engine_.PopulateOptions(&options_);
+              options_.Add<StringOption>(kLogFileId);
 }
 
 void EngineLoop::Initialize() {
@@ -335,7 +337,7 @@ void EngineLoop::RunLoop() {
   const auto options = options_.GetOptionsDict();
   Logging::Get().SetFilename(options.Get<std::string>(kLogFileId));
   if (options.Get<bool>(kPreload)) engine_.NewGame();
-//  UciLoop::RunLoop();
+  UciLoop::RunLoop();
 }
 
 void EngineLoop::CmdUci() {
