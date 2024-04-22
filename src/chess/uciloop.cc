@@ -65,35 +65,35 @@ const std::unordered_map<std::string, std::unordered_set<std::string>>
 
 std::pair<std::string, std::unordered_map<std::string, std::string>>
 ParseCommand(const std::string& line) {
-    std::unordered_map<std::string, std::string> params;
-    std::string* value = nullptr;
+  std::unordered_map<std::string, std::string> params;
+  std::string* value = nullptr;
 
-    std::istringstream iss(line);
-    std::string token;
-    iss >> token >> std::ws;
+  std::istringstream iss(line);
+  std::string token;
+  iss >> token >> std::ws;
 
-    // If empty line, return empty command.
-    if (token.empty()) return {};
+  // If empty line, return empty command.
+  if (token.empty()) return {};
 
-    const auto command = kKnownCommands.find(token);
-    if (command == kKnownCommands.end()) {
-        throw Exception("Unknown command: " + line);
+  const auto command = kKnownCommands.find(token);
+  if (command == kKnownCommands.end()) {
+    throw Exception("Unknown command: " + line);
+  }
+
+  std::string whitespace;
+  while (iss >> token) {
+    auto iter = command->second.find(token);
+    if (iter == command->second.end()) {
+      if (!value) throw Exception("Unexpected token: " + token);
+      *value += whitespace + token;
+      whitespace = " ";
+    } else {
+      value = &params[token];
+      iss >> std::ws;
+      whitespace = "";
     }
-
-    std::string whitespace;
-    while (iss >> token) {
-        auto iter = command->second.find(token);
-        if (iter == command->second.end()) {
-            if (!value) throw Exception("Unexpected token: " + token);
-            *value += whitespace + token;
-            whitespace = " ";
-        } else {
-            value = &params[token];
-            iss >> std::ws;
-            whitespace = "";
-        }
-    }
-    return {command->first, params};
+  }
+  return {command->first, params};
 }
 
 std::string GetOrEmpty(
@@ -131,9 +131,8 @@ bool ContainsKey(const std::unordered_map<std::string, std::string>& params,
 
 void UciLoop::RunLoop() {
   std::cout.setf(std::ios::unitbuf);
-  std::string line = "";
-  while (line != "quit") {
-      (std::getline(std::cin, line));
+  std::string line;
+  while (std::getline(std::cin, line)) {
     LOGFILE << ">> " << line;
     try {
       auto command = ParseCommand(line);
