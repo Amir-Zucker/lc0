@@ -1,4 +1,70 @@
-﻿v0.30.0 (2023-07-21)
+v0.31.0 (2024-06-16)
+~~~~~~~
+* No changes from rc3.
+
+v0.31.0-rc3 (2024-05-29)
+~~~~~~~
+* The `WDLDrawRateTarget` option now accepts the value 0 (new default) to retain
+  raw WDL values if `WDLCalibrationElo` is set to 0 (default).
+* Improvements to the verbose move stats if `WDLEvalObjectivity is used.
+* The centipawn score is displayed by default for old nets without WDL output.
+* Some build system improvements.
+
+v0.31.0-rc2 (2024-04-16)
+~~~~~~~
+* Changed cuda compilation options to use `-arch=native` or `-arch=all-major`
+  if no specific version is requested, with fallback for older cuda that don't
+  support those options.
+* Updated android builds to use openblas 0.3.27.
+* A few small fixes.
+
+v0.31.0-rc1 (2024-03-25)
+~~~~~~~
+* The blas, cuda, eigen, metal and onnx backends now have support for multihead
+  network architecture and can run BT3/BT4 nets.
+* Updated the internal Elo model to better align with regular Elo for human
+  players.
+* There is a new XLA backend that uses OpenXLA compiler to produce code to
+  execute the neural network. See
+  <https://github.com/LeelaChessZero/lc0/wiki/XLA-backend> for details. Related
+  are new leela2onnx options to output the HLO format that XLA understands.
+* There is a vastly simplified lc0 interface available by renaming the
+  executable to `lc0simple`.
+* The backends can now suggest a minibatch size to the search, this is enabled
+  by `--minibatch-size=0` (the new default).
+* If the cudnn backend detected an unsupported network architecture it will
+  switch to the cuda backend.
+* Two new selfplay options enable value and policy tournaments. A policy
+  tournament is using a single node policy to select the move to play, while a
+  value tournament searches all possible moves at depth 1 to select the one with
+  the best q.
+* While it is easy to get a single node policy evaluation (`go nodes 1` using
+  uci), there was no simple way to get the effect of a value only evalaution, so
+  the `--value-only` option was added.
+* Button uci options were implemented and a button to clear the tree was added
+  (as hidden option).
+* Support for the uci `go mate` option was added.
+* The rescorer can now be built from the lc0 code base instead of a separate
+  branch.
+* A dicrete onnx layernorm implementation was added to get around a onnxruntime
+  bug with directml - this has some overhead so it is only enabled for onnx-dml
+  and can be switched off with the `alt_layernorm=false` backend option.
+* The `--onnx2pytoch` option was added to leela2onnx to generate pytorch
+  compatible models.
+* There is a cuda `min_batch` backend option to reduce non-determinism with
+  small batches.
+* New options were added to onnx2leela to fix tf exported onnx models.
+* The onnx backend can now be built for amd's rocm.
+* Fixed a bug where the Contempt effect on eval was too low for nets with
+  natively higher draw rates.
+* Made the WDL Rescale sharpness limit configurable via the `--wdl-max-s` hidden
+  option.
+* The search task workers can be set automatically, to either 0 for cpu backends
+  or up to 4 depending on the number of cpu cores. This is enabled by
+  `--task-workers=-1` (the new default).
+* Several assorted fixes and code cleanups.
+
+v0.30.0 (2023-07-21)
 ~~~~~~~
 * WDL_mu score type is now the default and the mlh-threshold default was
   changed from 0 to 0.8.
@@ -154,8 +220,8 @@ v0.27.0-rc2 (2021-02-18)
 
 v0.27.0-rc1 (2021-02-06)
 ~~~~~~~
-* Fix a bug which meant `position ... moves ...` didn't work if the moves 
-  went off the end of the existing tree. 
+* Fix a bug which meant `position ... moves ...` didn't work if the moves
+  went off the end of the existing tree.
 
 v0.27.0-rc0 (2021-02-06)
 ~~~~~~~
@@ -215,8 +281,8 @@ v0.26.0-rc1 (2020-06-29)
 ~~~~~~~~~~~
 
 * Verbose move stats now includes a line for the root node itself.
-* Added optional `alphazero` time manager type for fixed fraction of 
-  remaining time per move. 
+* Added optional `alphazero` time manager type for fixed fraction of
+  remaining time per move.
 * The WL score is now tracked with double pecision to improve accuracy
   during very long search.
 * Fix for a performance bug when playing from tablebase position with
@@ -268,7 +334,7 @@ v0.26.0-rc1 (2020-06-29)
   of threads that demux is using rather than number of backends. By default
   this is no change as usually there is 1 thread per backend. But it allows
   to more easily use demux against a blas backend sending one chunk per core.
-* Added support for new training input variants canonical_hectoplies and 
+* Added support for new training input variants canonical_hectoplies and
   canonical_hectoplies_armageddon.
 * Fixed a bug where if the network search paths for autodiscover contain files
   which lc0 cannot open it would error out rather than continuing on to other
@@ -328,7 +394,7 @@ v0.26.0-rc1 (2020-06-29)
 v0.25.1 (2020-04-30)
 ~~~~~~~
 
-* Fixed some issues with cudnn backend on the 16xx GTX models and also for 
+* Fixed some issues with cudnn backend on the 16xx GTX models and also for
   low memory devices with large network files where the new optimizations
   could result in out of memory errors.
 * Added a workaround for a cutechess issue where reporting depth 0 during
@@ -343,7 +409,7 @@ v0.25.0 (2020-04-28)
 * Restore some backwards compatibility in cudnn backends that was lost with
   the addition of the new convolution implementation. It is also on by default
   for more scenarios, although still off for fp16 on RTX gpus.
-* Small logic fix for nps smoothing in the new optional experimental time 
+* Small logic fix for nps smoothing in the new optional experimental time
   manager.
 
 v0.25.0-rc2 (2020-04-23)
@@ -356,7 +422,7 @@ v0.25.0-rc2 (2020-04-23)
   rule in initial fen.
 * Some refinements of certainty propagation.
 * Better support for c++17 implementations that are missing charconv.
-* Option to more accurately apply time management for uci hosts using 
+* Option to more accurately apply time management for uci hosts using
   cuteseal or similar timing techniques.
 * Fix for selfplay mode to allow exactly book length total games.
 * Fix for selfplay opening books with castling moves starting from chess960 fens.
@@ -369,7 +435,7 @@ v0.25.0-rc2 (2020-04-23)
   the total score, including any moves left based effect if applicable.
 * New temperature decay option to allow to delay the start of decay.
 * All temperature options have been hidden by default.
-* New optional cuda backend convolution implementation. Off by default for 
+* New optional cuda backend convolution implementation. Off by default for
   cudnn-fp16 until an issue with cublas performance on some gpus is resolved.
 
 v0.25.0-rc1 (2020-04-09)
@@ -381,7 +447,7 @@ v0.25.0-rc1 (2020-04-09)
 * Mate score reporting is now possible, and move selection will prefer shorter
   mates over longer ones when they are proven.
 * Training now outputs v5 format data. This passes the moves left information
-  back to training. This also includes support for multiple sub formats, 
+  back to training. This also includes support for multiple sub formats,
   including the existing standard, a new variant which can encode FRC960
   castling, and also a further extension of that which tries to make training
   data cannonical, so there aren't multiple positions that are trivially
@@ -392,9 +458,9 @@ v0.25.0-rc1 (2020-04-09)
   to be though.
 * `--noise` flag is gone, use `--noise-epsilon=0.25` to get the old behavior.
 * Some bug fixes related to drawscore.
-* Selfplay mode now defaults to the same value as match play for 
+* Selfplay mode now defaults to the same value as match play for
   `--root-has-own-cpuct-params` (true).
-* Some advanced time management parameters are now accessed via the new 
+* Some advanced time management parameters are now accessed via the new
   `--time-manager` parameter instead of individual parameters.
 * Windows build script has been modernized.
 * Separate Eigen backend option for CPU.
@@ -405,14 +471,14 @@ v0.25.0-rc1 (2020-04-09)
 v0.24.1 (2020-03-15)
 ~~~~~~~
 
-* Fix issues where logitq was being passed as drawscore and logitq wasn't 
-  passed to some GetQ calls. Causing major performance issues when either 
+* Fix issues where logitq was being passed as drawscore and logitq wasn't
+  passed to some GetQ calls. Causing major performance issues when either
   setting was non-default.
 
 v0.24.0 (2020-03-11)
 ~~~~~~~
 
-* New parameter `--max-out-of-order-evals-factor` replaces 
+* New parameter `--max-out-of-order-evals-factor` replaces
   `--max-out-of-order-evals` that was introduced in v0.24.0-rc3 and provides
   the factor to multiply the maximum batch size to set maximum number
   out-of-order evals per batch. The default value of 1.0 keeps the behavior
@@ -432,7 +498,7 @@ v0.24.0-rc3 (2020-03-08)
 v0.24.0-rc2 (2020-03-01)
 ~~~~~~~~~~~
 
-* All releases are now bundled with network id591226 (and the file date is old 
+* All releases are now bundled with network id591226 (and the file date is old
   enough so it has a lower priority than networks that you already may have
   in your directory).
 * Added a 'backendbench' mode to benchmark NN evaluation performance without
@@ -596,7 +662,7 @@ v0.21.0-rc1 (2019-02-16)
 
 * Check Syzygy tablebase file sizes for corruption (#690)
 * search for nvcc on the path first (#709)
-* AZ-style policy head support (#712) 
+* AZ-style policy head support (#712)
 * Implement V4TrainingData (#722)
 * WDL value head support (#635)
 * Add option for doing kldgain thresholding rather than absolute visit
@@ -672,7 +738,7 @@ v0.20.0 (2019-01-01)
 v0.20.0-rc2 (2018-12-24)
 ~~~~~~~~~~~
 
-* Fix for demux backend to match cuda expected threading model for 
+* Fix for demux backend to match cuda expected threading model for
   computations. (#605)
 
 v0.20.0-rc1 (2018-12-22)
@@ -759,7 +825,7 @@ v0.19.0-rc1 (2018-11-03)
   --max-collision-events – number of collision events allowed per batch.
     Default is 32. This parameter is roughly equivalent to
     --allowed-node-collisions in v0.18.
-  
+
   --max-collision-visits – total number of estimated collisions per NN batch.
     Default is 9999.
 
@@ -830,11 +896,11 @@ v0.19.0-rc1 (2018-11-03)
   There is now an experimental flag --ramlimit-mb. The engine tries to estimate
   how much memory it uses and stops search when tree size (plus cache size)
   reaches RAM limit. The estimation is very rough. We'll see how it performs and
-  improve estimation later.  
+  improve estimation later.
   In situations when search cannot be stopped (`go infinite` or ponder),
   `bestmove` is not automatically outputted. Instead, search stops progress and
   outputs warning.
-  
+
   Benchmark mode has been implemented. Run run, use the following command line:
     ./lc0 benchmark
   This feature is pretty basic in the current version, but will be expanded later.
@@ -897,7 +963,7 @@ New features:
 Time management changes:
 
 * Introduced --immediate-time-use flag. Yes, yet another time management
-  flag. Posible values are between 0.0 and 1.0. Setting it closer to 
+  flag. Posible values are between 0.0 and 1.0. Setting it closer to
   1.0 makes Leela use time saved from futile search aversion earlier.
 
 * Some time management parameters were changed:
@@ -938,7 +1004,7 @@ Other:
 * You can now build for older processors that don't support the popcnt
   instruction by passing -Dpopcnt=false to meson when building.
 
-* 32-bit build is possible now. CPU only and we were only able to build it 
+* 32-bit build is possible now. CPU only and we were only able to build it
   in Linux for now, including Raspberry Pi.
 
 * Threading issue which caused crash in heavily multithreaded environment
