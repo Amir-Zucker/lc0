@@ -14,6 +14,12 @@ class Weights_Smolgen;
 class Weights_MHA;
 class Weights_FFN;
 class Weights_EncoderLayer;
+class Weights_PolicyHead;
+class Weights_ValueHead;
+class Weights_PolicyHeadMap;
+class Weights_PolicyHeads;
+class Weights_ValueHeadMap;
+class Weights_ValueHeads;
 class TrainingParams;
 class NetworkFormat;
 class Format;
@@ -74,6 +80,8 @@ enum NetworkFormat_NetworkStructure : int {
   NetworkFormat_NetworkStructure_NETWORK_SE_WITH_HEADFORMAT = 4,
   NetworkFormat_NetworkStructure_NETWORK_ONNX = 5,
   NetworkFormat_NetworkStructure_NETWORK_ATTENTIONBODY_WITH_HEADFORMAT = 6,
+  NetworkFormat_NetworkStructure_NETWORK_ATTENTIONBODY_WITH_MULTIHEADFORMAT = 7,
+  NetworkFormat_NetworkStructure_NETWORK_AB_LEGACY_WITH_MULTIHEADFORMAT = 134,
 };
 inline std::string NetworkFormat_NetworkStructure_Name(NetworkFormat_NetworkStructure val) {
   switch (val) {
@@ -91,6 +99,10 @@ inline std::string NetworkFormat_NetworkStructure_Name(NetworkFormat_NetworkStru
       return "NETWORK_ONNX";
     case NetworkFormat_NetworkStructure_NETWORK_ATTENTIONBODY_WITH_HEADFORMAT:
       return "NETWORK_ATTENTIONBODY_WITH_HEADFORMAT";
+    case NetworkFormat_NetworkStructure_NETWORK_ATTENTIONBODY_WITH_MULTIHEADFORMAT:
+      return "NETWORK_ATTENTIONBODY_WITH_MULTIHEADFORMAT";
+    case NetworkFormat_NetworkStructure_NETWORK_AB_LEGACY_WITH_MULTIHEADFORMAT:
+      return "NETWORK_AB_LEGACY_WITH_MULTIHEADFORMAT";
   };
   return "NetworkStructure(" + std::to_string(val) + ")";
 }
@@ -194,6 +206,22 @@ inline std::string NetworkFormat_DefaultActivation_Name(NetworkFormat_DefaultAct
       return "DEFAULT_ACTIVATION_MISH";
   };
   return "DefaultActivation(" + std::to_string(val) + ")";
+}
+enum NetworkFormat_InputEmbeddingFormat : int {
+  NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_NONE = 0,
+  NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_PE_MAP = 1,
+  NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_PE_DENSE = 2,
+};
+inline std::string NetworkFormat_InputEmbeddingFormat_Name(NetworkFormat_InputEmbeddingFormat val) {
+  switch (val) {
+    case NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_NONE:
+      return "INPUT_EMBEDDING_NONE";
+    case NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_PE_MAP:
+      return "INPUT_EMBEDDING_PE_MAP";
+    case NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_PE_DENSE:
+      return "INPUT_EMBEDDING_PE_DENSE";
+  };
+  return "InputEmbeddingFormat(" + std::to_string(val) + ")";
 }
 enum Format_Encoding : int {
   Format_Encoding_UNKNOWN = 0,
@@ -620,6 +648,307 @@ class Weights_EncoderLayer final : public lczero::ProtoMessage {
   Weights_Layer ln2_betas_{};
 };
 
+class Weights_PolicyHead final : public lczero::ProtoMessage {
+ public:
+
+  bool has_ip_pol_w() const;
+  const Weights_Layer& ip_pol_w() const;
+  Weights_Layer* mutable_ip_pol_w();
+
+  bool has_ip_pol_b() const;
+  const Weights_Layer& ip_pol_b() const;
+  Weights_Layer* mutable_ip_pol_b();
+
+  bool has_ip2_pol_w() const;
+  const Weights_Layer& ip2_pol_w() const;
+  Weights_Layer* mutable_ip2_pol_w();
+
+  bool has_ip2_pol_b() const;
+  const Weights_Layer& ip2_pol_b() const;
+  Weights_Layer* mutable_ip2_pol_b();
+
+  bool has_ip3_pol_w() const;
+  const Weights_Layer& ip3_pol_w() const;
+  Weights_Layer* mutable_ip3_pol_w();
+
+  bool has_ip3_pol_b() const;
+  const Weights_Layer& ip3_pol_b() const;
+  Weights_Layer* mutable_ip3_pol_b();
+
+  bool has_ip4_pol_w() const;
+  const Weights_Layer& ip4_pol_w() const;
+  Weights_Layer* mutable_ip4_pol_w();
+
+  Weights_EncoderLayer* add_pol_encoder();
+  const std::vector<Weights_EncoderLayer>& pol_encoder() const;
+  std::vector<Weights_EncoderLayer>* mutable_pol_encoder();
+  const Weights_EncoderLayer& pol_encoder(size_t idx) const;
+  Weights_EncoderLayer* mutable_pol_encoder(size_t idx);
+  size_t pol_encoder_size() const;
+
+  bool has_pol_headcount() const;
+  std::uint32_t pol_headcount() const;
+  void set_pol_headcount(std::uint32_t val);
+
+  bool has_policy1() const;
+  const Weights_ConvBlock& policy1() const;
+  Weights_ConvBlock* mutable_policy1();
+
+  bool has_policy() const;
+  const Weights_ConvBlock& policy() const;
+  Weights_ConvBlock* mutable_policy();
+
+  std::string OutputAsString() const final;
+  std::string OutputAsJson() const final;
+  void Clear() final;
+
+ private:
+  void SetString(int field_id, std::string_view val) final;
+  void SetVarInt(int field_id, std::uint64_t val) final;
+
+  bool has_ip_pol_w_{};
+  Weights_Layer ip_pol_w_{};
+  bool has_ip_pol_b_{};
+  Weights_Layer ip_pol_b_{};
+  bool has_ip2_pol_w_{};
+  Weights_Layer ip2_pol_w_{};
+  bool has_ip2_pol_b_{};
+  Weights_Layer ip2_pol_b_{};
+  bool has_ip3_pol_w_{};
+  Weights_Layer ip3_pol_w_{};
+  bool has_ip3_pol_b_{};
+  Weights_Layer ip3_pol_b_{};
+  bool has_ip4_pol_w_{};
+  Weights_Layer ip4_pol_w_{};
+  std::vector<Weights_EncoderLayer> pol_encoder_;
+  bool has_pol_headcount_{};
+  std::uint32_t pol_headcount_{};
+  bool has_policy1_{};
+  Weights_ConvBlock policy1_{};
+  bool has_policy_{};
+  Weights_ConvBlock policy_{};
+};
+
+class Weights_ValueHead final : public lczero::ProtoMessage {
+ public:
+
+  bool has_ip_val_w() const;
+  const Weights_Layer& ip_val_w() const;
+  Weights_Layer* mutable_ip_val_w();
+
+  bool has_ip_val_b() const;
+  const Weights_Layer& ip_val_b() const;
+  Weights_Layer* mutable_ip_val_b();
+
+  bool has_ip1_val_w() const;
+  const Weights_Layer& ip1_val_w() const;
+  Weights_Layer* mutable_ip1_val_w();
+
+  bool has_ip1_val_b() const;
+  const Weights_Layer& ip1_val_b() const;
+  Weights_Layer* mutable_ip1_val_b();
+
+  bool has_ip2_val_w() const;
+  const Weights_Layer& ip2_val_w() const;
+  Weights_Layer* mutable_ip2_val_w();
+
+  bool has_ip2_val_b() const;
+  const Weights_Layer& ip2_val_b() const;
+  Weights_Layer* mutable_ip2_val_b();
+
+  bool has_ip_val_err_w() const;
+  const Weights_Layer& ip_val_err_w() const;
+  Weights_Layer* mutable_ip_val_err_w();
+
+  bool has_ip_val_err_b() const;
+  const Weights_Layer& ip_val_err_b() const;
+  Weights_Layer* mutable_ip_val_err_b();
+
+  bool has_ip_val_cat_w() const;
+  const Weights_Layer& ip_val_cat_w() const;
+  Weights_Layer* mutable_ip_val_cat_w();
+
+  bool has_ip_val_cat_b() const;
+  const Weights_Layer& ip_val_cat_b() const;
+  Weights_Layer* mutable_ip_val_cat_b();
+
+  bool has_value() const;
+  const Weights_ConvBlock& value() const;
+  Weights_ConvBlock* mutable_value();
+
+  std::string OutputAsString() const final;
+  std::string OutputAsJson() const final;
+  void Clear() final;
+
+ private:
+  void SetString(int field_id, std::string_view val) final;
+
+  bool has_ip_val_w_{};
+  Weights_Layer ip_val_w_{};
+  bool has_ip_val_b_{};
+  Weights_Layer ip_val_b_{};
+  bool has_ip1_val_w_{};
+  Weights_Layer ip1_val_w_{};
+  bool has_ip1_val_b_{};
+  Weights_Layer ip1_val_b_{};
+  bool has_ip2_val_w_{};
+  Weights_Layer ip2_val_w_{};
+  bool has_ip2_val_b_{};
+  Weights_Layer ip2_val_b_{};
+  bool has_ip_val_err_w_{};
+  Weights_Layer ip_val_err_w_{};
+  bool has_ip_val_err_b_{};
+  Weights_Layer ip_val_err_b_{};
+  bool has_ip_val_cat_w_{};
+  Weights_Layer ip_val_cat_w_{};
+  bool has_ip_val_cat_b_{};
+  Weights_Layer ip_val_cat_b_{};
+  bool has_value_{};
+  Weights_ConvBlock value_{};
+};
+
+class Weights_PolicyHeadMap final : public lczero::ProtoMessage {
+ public:
+
+  bool has_key() const;
+  std::string_view key() const;
+  void set_key(std::string_view val);
+
+  bool has_value() const;
+  const Weights_PolicyHead& value() const;
+  Weights_PolicyHead* mutable_value();
+
+  std::string OutputAsString() const final;
+  std::string OutputAsJson() const final;
+  void Clear() final;
+
+ private:
+  void SetString(int field_id, std::string_view val) final;
+
+  bool has_key_{};
+  std::string key_{};
+  bool has_value_{};
+  Weights_PolicyHead value_{};
+};
+
+class Weights_PolicyHeads final : public lczero::ProtoMessage {
+ public:
+
+  bool has_ip_pol_w() const;
+  const Weights_Layer& ip_pol_w() const;
+  Weights_Layer* mutable_ip_pol_w();
+
+  bool has_ip_pol_b() const;
+  const Weights_Layer& ip_pol_b() const;
+  Weights_Layer* mutable_ip_pol_b();
+
+  bool has_vanilla() const;
+  const Weights_PolicyHead& vanilla() const;
+  Weights_PolicyHead* mutable_vanilla();
+
+  bool has_optimistic_st() const;
+  const Weights_PolicyHead& optimistic_st() const;
+  Weights_PolicyHead* mutable_optimistic_st();
+
+  bool has_soft() const;
+  const Weights_PolicyHead& soft() const;
+  Weights_PolicyHead* mutable_soft();
+
+  bool has_opponent() const;
+  const Weights_PolicyHead& opponent() const;
+  Weights_PolicyHead* mutable_opponent();
+
+  Weights_PolicyHeadMap* add_policy_head_map();
+  const std::vector<Weights_PolicyHeadMap>& policy_head_map() const;
+  std::vector<Weights_PolicyHeadMap>* mutable_policy_head_map();
+  const Weights_PolicyHeadMap& policy_head_map(size_t idx) const;
+  Weights_PolicyHeadMap* mutable_policy_head_map(size_t idx);
+  size_t policy_head_map_size() const;
+
+  std::string OutputAsString() const final;
+  std::string OutputAsJson() const final;
+  void Clear() final;
+
+ private:
+  void SetString(int field_id, std::string_view val) final;
+
+  bool has_ip_pol_w_{};
+  Weights_Layer ip_pol_w_{};
+  bool has_ip_pol_b_{};
+  Weights_Layer ip_pol_b_{};
+  bool has_vanilla_{};
+  Weights_PolicyHead vanilla_{};
+  bool has_optimistic_st_{};
+  Weights_PolicyHead optimistic_st_{};
+  bool has_soft_{};
+  Weights_PolicyHead soft_{};
+  bool has_opponent_{};
+  Weights_PolicyHead opponent_{};
+  std::vector<Weights_PolicyHeadMap> policy_head_map_;
+};
+
+class Weights_ValueHeadMap final : public lczero::ProtoMessage {
+ public:
+
+  bool has_key() const;
+  std::string_view key() const;
+  void set_key(std::string_view val);
+
+  bool has_value() const;
+  const Weights_ValueHead& value() const;
+  Weights_ValueHead* mutable_value();
+
+  std::string OutputAsString() const final;
+  std::string OutputAsJson() const final;
+  void Clear() final;
+
+ private:
+  void SetString(int field_id, std::string_view val) final;
+
+  bool has_key_{};
+  std::string key_{};
+  bool has_value_{};
+  Weights_ValueHead value_{};
+};
+
+class Weights_ValueHeads final : public lczero::ProtoMessage {
+ public:
+
+  bool has_winner() const;
+  const Weights_ValueHead& winner() const;
+  Weights_ValueHead* mutable_winner();
+
+  bool has_q() const;
+  const Weights_ValueHead& q() const;
+  Weights_ValueHead* mutable_q();
+
+  bool has_st() const;
+  const Weights_ValueHead& st() const;
+  Weights_ValueHead* mutable_st();
+
+  Weights_ValueHeadMap* add_value_head_map();
+  const std::vector<Weights_ValueHeadMap>& value_head_map() const;
+  std::vector<Weights_ValueHeadMap>* mutable_value_head_map();
+  const Weights_ValueHeadMap& value_head_map(size_t idx) const;
+  Weights_ValueHeadMap* mutable_value_head_map(size_t idx);
+  size_t value_head_map_size() const;
+
+  std::string OutputAsString() const final;
+  std::string OutputAsJson() const final;
+  void Clear() final;
+
+ private:
+  void SetString(int field_id, std::string_view val) final;
+
+  bool has_winner_{};
+  Weights_ValueHead winner_{};
+  bool has_q_{};
+  Weights_ValueHead q_{};
+  bool has_st_{};
+  Weights_ValueHead st_{};
+  std::vector<Weights_ValueHeadMap> value_head_map_;
+};
+
 class Weights final : public lczero::ProtoMessage {
  public:
   using Layer = Weights_Layer;
@@ -630,6 +959,12 @@ class Weights final : public lczero::ProtoMessage {
   using MHA = Weights_MHA;
   using FFN = Weights_FFN;
   using EncoderLayer = Weights_EncoderLayer;
+  using PolicyHead = Weights_PolicyHead;
+  using ValueHead = Weights_ValueHead;
+  using PolicyHeadMap = Weights_PolicyHeadMap;
+  using PolicyHeads = Weights_PolicyHeads;
+  using ValueHeadMap = Weights_ValueHeadMap;
+  using ValueHeads = Weights_ValueHeads;
 
   bool has_input() const;
   const Weights_ConvBlock& input() const;
@@ -637,8 +972,18 @@ class Weights final : public lczero::ProtoMessage {
 
   Weights_Residual* add_residual();
   const std::vector<Weights_Residual>& residual() const;
+  std::vector<Weights_Residual>* mutable_residual();
   const Weights_Residual& residual(size_t idx) const;
+  Weights_Residual* mutable_residual(size_t idx);
   size_t residual_size() const;
+
+  bool has_ip_emb_preproc_w() const;
+  const Weights_Layer& ip_emb_preproc_w() const;
+  Weights_Layer* mutable_ip_emb_preproc_w();
+
+  bool has_ip_emb_preproc_b() const;
+  const Weights_Layer& ip_emb_preproc_b() const;
+  Weights_Layer* mutable_ip_emb_preproc_b();
 
   bool has_ip_emb_w() const;
   const Weights_Layer& ip_emb_w() const;
@@ -648,6 +993,14 @@ class Weights final : public lczero::ProtoMessage {
   const Weights_Layer& ip_emb_b() const;
   Weights_Layer* mutable_ip_emb_b();
 
+  bool has_ip_emb_ln_gammas() const;
+  const Weights_Layer& ip_emb_ln_gammas() const;
+  Weights_Layer* mutable_ip_emb_ln_gammas();
+
+  bool has_ip_emb_ln_betas() const;
+  const Weights_Layer& ip_emb_ln_betas() const;
+  Weights_Layer* mutable_ip_emb_ln_betas();
+
   bool has_ip_mult_gate() const;
   const Weights_Layer& ip_mult_gate() const;
   Weights_Layer* mutable_ip_mult_gate();
@@ -656,9 +1009,23 @@ class Weights final : public lczero::ProtoMessage {
   const Weights_Layer& ip_add_gate() const;
   Weights_Layer* mutable_ip_add_gate();
 
+  bool has_ip_emb_ffn() const;
+  const Weights_FFN& ip_emb_ffn() const;
+  Weights_FFN* mutable_ip_emb_ffn();
+
+  bool has_ip_emb_ffn_ln_gammas() const;
+  const Weights_Layer& ip_emb_ffn_ln_gammas() const;
+  Weights_Layer* mutable_ip_emb_ffn_ln_gammas();
+
+  bool has_ip_emb_ffn_ln_betas() const;
+  const Weights_Layer& ip_emb_ffn_ln_betas() const;
+  Weights_Layer* mutable_ip_emb_ffn_ln_betas();
+
   Weights_EncoderLayer* add_encoder();
   const std::vector<Weights_EncoderLayer>& encoder() const;
+  std::vector<Weights_EncoderLayer>* mutable_encoder();
   const Weights_EncoderLayer& encoder(size_t idx) const;
+  Weights_EncoderLayer* mutable_encoder(size_t idx);
   size_t encoder_size() const;
 
   bool has_headcount() const;
@@ -667,7 +1034,9 @@ class Weights final : public lczero::ProtoMessage {
 
   Weights_EncoderLayer* add_pol_encoder();
   const std::vector<Weights_EncoderLayer>& pol_encoder() const;
+  std::vector<Weights_EncoderLayer>* mutable_pol_encoder();
   const Weights_EncoderLayer& pol_encoder(size_t idx) const;
+  Weights_EncoderLayer* mutable_pol_encoder(size_t idx);
   size_t pol_encoder_size() const;
 
   bool has_pol_headcount() const;
@@ -738,6 +1107,14 @@ class Weights final : public lczero::ProtoMessage {
   const Weights_Layer& ip2_val_b() const;
   Weights_Layer* mutable_ip2_val_b();
 
+  bool has_value_heads() const;
+  const Weights_ValueHeads& value_heads() const;
+  Weights_ValueHeads* mutable_value_heads();
+
+  bool has_policy_heads() const;
+  const Weights_PolicyHeads& policy_heads() const;
+  Weights_PolicyHeads* mutable_policy_heads();
+
   bool has_moves_left() const;
   const Weights_ConvBlock& moves_left() const;
   Weights_ConvBlock* mutable_moves_left();
@@ -785,14 +1162,28 @@ class Weights final : public lczero::ProtoMessage {
   bool has_input_{};
   Weights_ConvBlock input_{};
   std::vector<Weights_Residual> residual_;
+  bool has_ip_emb_preproc_w_{};
+  Weights_Layer ip_emb_preproc_w_{};
+  bool has_ip_emb_preproc_b_{};
+  Weights_Layer ip_emb_preproc_b_{};
   bool has_ip_emb_w_{};
   Weights_Layer ip_emb_w_{};
   bool has_ip_emb_b_{};
   Weights_Layer ip_emb_b_{};
+  bool has_ip_emb_ln_gammas_{};
+  Weights_Layer ip_emb_ln_gammas_{};
+  bool has_ip_emb_ln_betas_{};
+  Weights_Layer ip_emb_ln_betas_{};
   bool has_ip_mult_gate_{};
   Weights_Layer ip_mult_gate_{};
   bool has_ip_add_gate_{};
   Weights_Layer ip_add_gate_{};
+  bool has_ip_emb_ffn_{};
+  Weights_FFN ip_emb_ffn_{};
+  bool has_ip_emb_ffn_ln_gammas_{};
+  Weights_Layer ip_emb_ffn_ln_gammas_{};
+  bool has_ip_emb_ffn_ln_betas_{};
+  Weights_Layer ip_emb_ffn_ln_betas_{};
   std::vector<Weights_EncoderLayer> encoder_;
   bool has_headcount_{};
   std::uint32_t headcount_{};
@@ -831,6 +1222,10 @@ class Weights final : public lczero::ProtoMessage {
   Weights_Layer ip2_val_w_{};
   bool has_ip2_val_b_{};
   Weights_Layer ip2_val_b_{};
+  bool has_value_heads_{};
+  Weights_ValueHeads value_heads_{};
+  bool has_policy_heads_{};
+  Weights_PolicyHeads policy_heads_{};
   bool has_moves_left_{};
   Weights_ConvBlock moves_left_{};
   bool has_ip_mov_w_{};
@@ -963,7 +1358,11 @@ class NetworkFormat final : public lczero::ProtoMessage {
       NetworkFormat_NetworkStructure_NETWORK_ONNX;
   static constexpr NetworkStructure NETWORK_ATTENTIONBODY_WITH_HEADFORMAT =
       NetworkFormat_NetworkStructure_NETWORK_ATTENTIONBODY_WITH_HEADFORMAT;
-  static constexpr std::array<NetworkStructure,7> NetworkStructure_AllValues = {
+  static constexpr NetworkStructure NETWORK_ATTENTIONBODY_WITH_MULTIHEADFORMAT =
+      NetworkFormat_NetworkStructure_NETWORK_ATTENTIONBODY_WITH_MULTIHEADFORMAT;
+  static constexpr NetworkStructure NETWORK_AB_LEGACY_WITH_MULTIHEADFORMAT =
+      NetworkFormat_NetworkStructure_NETWORK_AB_LEGACY_WITH_MULTIHEADFORMAT;
+  static constexpr std::array<NetworkStructure,9> NetworkStructure_AllValues = {
     NETWORK_UNKNOWN,
     NETWORK_CLASSICAL,
     NETWORK_SE,
@@ -971,6 +1370,8 @@ class NetworkFormat final : public lczero::ProtoMessage {
     NETWORK_SE_WITH_HEADFORMAT,
     NETWORK_ONNX,
     NETWORK_ATTENTIONBODY_WITH_HEADFORMAT,
+    NETWORK_ATTENTIONBODY_WITH_MULTIHEADFORMAT,
+    NETWORK_AB_LEGACY_WITH_MULTIHEADFORMAT,
   };
   static std::string NetworkStructure_Name(NetworkStructure val) {
     return NetworkFormat_NetworkStructure_Name(val);
@@ -1071,6 +1472,21 @@ class NetworkFormat final : public lczero::ProtoMessage {
   static std::string DefaultActivation_Name(DefaultActivation val) {
     return NetworkFormat_DefaultActivation_Name(val);
   }
+  using InputEmbeddingFormat = NetworkFormat_InputEmbeddingFormat;
+  static constexpr InputEmbeddingFormat INPUT_EMBEDDING_NONE =
+      NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_NONE;
+  static constexpr InputEmbeddingFormat INPUT_EMBEDDING_PE_MAP =
+      NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_PE_MAP;
+  static constexpr InputEmbeddingFormat INPUT_EMBEDDING_PE_DENSE =
+      NetworkFormat_InputEmbeddingFormat_INPUT_EMBEDDING_PE_DENSE;
+  static constexpr std::array<InputEmbeddingFormat,3> InputEmbeddingFormat_AllValues = {
+    INPUT_EMBEDDING_NONE,
+    INPUT_EMBEDDING_PE_MAP,
+    INPUT_EMBEDDING_PE_DENSE,
+  };
+  static std::string InputEmbeddingFormat_Name(InputEmbeddingFormat val) {
+    return NetworkFormat_InputEmbeddingFormat_Name(val);
+  }
 
   bool has_input() const;
   NetworkFormat_InputFormat input() const;
@@ -1108,6 +1524,10 @@ class NetworkFormat final : public lczero::ProtoMessage {
   NetworkFormat_ActivationFunction ffn_activation() const;
   void set_ffn_activation(NetworkFormat_ActivationFunction val);
 
+  bool has_input_embedding() const;
+  NetworkFormat_InputEmbeddingFormat input_embedding() const;
+  void set_input_embedding(NetworkFormat_InputEmbeddingFormat val);
+
   std::string OutputAsString() const final;
   std::string OutputAsJson() const final;
   void Clear() final;
@@ -1133,6 +1553,8 @@ class NetworkFormat final : public lczero::ProtoMessage {
   NetworkFormat_ActivationFunction smolgen_activation_{};
   bool has_ffn_activation_{};
   NetworkFormat_ActivationFunction ffn_activation_{};
+  bool has_input_embedding_{};
+  NetworkFormat_InputEmbeddingFormat input_embedding_{};
 };
 
 class Format final : public lczero::ProtoMessage {
@@ -1967,6 +2389,510 @@ inline Weights_Layer* Weights_EncoderLayer::mutable_ln2_betas() {
   has_ln2_betas_ = true;
   return &ln2_betas_;
 }
+inline std::string Weights_PolicyHead::OutputAsString() const {
+  std::string out;
+  if (has_ip_pol_w_) AppendString(1, ip_pol_w_.OutputAsString(), &out);
+  if (has_ip_pol_b_) AppendString(2, ip_pol_b_.OutputAsString(), &out);
+  if (has_ip2_pol_w_) AppendString(3, ip2_pol_w_.OutputAsString(), &out);
+  if (has_ip2_pol_b_) AppendString(4, ip2_pol_b_.OutputAsString(), &out);
+  if (has_ip3_pol_w_) AppendString(5, ip3_pol_w_.OutputAsString(), &out);
+  if (has_ip3_pol_b_) AppendString(6, ip3_pol_b_.OutputAsString(), &out);
+  if (has_ip4_pol_w_) AppendString(7, ip4_pol_w_.OutputAsString(), &out);
+  for (const auto& x : pol_encoder_) AppendString(8, x.OutputAsString(), &out);
+  if (has_pol_headcount_) AppendVarInt(9, pol_headcount_, &out);
+  if (has_policy1_) AppendString(10, policy1_.OutputAsString(), &out);
+  if (has_policy_) AppendString(11, policy_.OutputAsString(), &out);
+  return out;
+}
+inline std::string Weights_PolicyHead::OutputAsJson() const {
+  bool first = true;
+  std::string out = "{";
+  if (has_ip_pol_w_) AppendJsonField("ip_pol_w", ip_pol_w_, &first, &out);
+  if (has_ip_pol_b_) AppendJsonField("ip_pol_b", ip_pol_b_, &first, &out);
+  if (has_ip2_pol_w_) AppendJsonField("ip2_pol_w", ip2_pol_w_, &first, &out);
+  if (has_ip2_pol_b_) AppendJsonField("ip2_pol_b", ip2_pol_b_, &first, &out);
+  if (has_ip3_pol_w_) AppendJsonField("ip3_pol_w", ip3_pol_w_, &first, &out);
+  if (has_ip3_pol_b_) AppendJsonField("ip3_pol_b", ip3_pol_b_, &first, &out);
+  if (has_ip4_pol_w_) AppendJsonField("ip4_pol_w", ip4_pol_w_, &first, &out);
+  if (!pol_encoder_.empty()) AppendJsonRepeatedField("pol_encoder", pol_encoder_, &first, &out);
+  if (has_pol_headcount_) AppendJsonField("pol_headcount", pol_headcount_, &first, &out);
+  if (has_policy1_) AppendJsonField("policy1", policy1_, &first, &out);
+  if (has_policy_) AppendJsonField("policy", policy_, &first, &out);
+  out += "}";
+  return out;
+}
+inline void Weights_PolicyHead::Clear() {
+  has_ip_pol_w_ = false;
+  ip_pol_w_ = {};
+  has_ip_pol_b_ = false;
+  ip_pol_b_ = {};
+  has_ip2_pol_w_ = false;
+  ip2_pol_w_ = {};
+  has_ip2_pol_b_ = false;
+  ip2_pol_b_ = {};
+  has_ip3_pol_w_ = false;
+  ip3_pol_w_ = {};
+  has_ip3_pol_b_ = false;
+  ip3_pol_b_ = {};
+  has_ip4_pol_w_ = false;
+  ip4_pol_w_ = {};
+  pol_encoder_.clear();
+  has_pol_headcount_ = false;
+  pol_headcount_ = {};
+  has_policy1_ = false;
+  policy1_ = {};
+  has_policy_ = false;
+  policy_ = {};
+}
+inline void Weights_PolicyHead::SetString(int field_id, std::string_view val) {
+  switch (field_id) {
+    case 1: mutable_ip_pol_w()->MergeFromString(val); break;
+    case 2: mutable_ip_pol_b()->MergeFromString(val); break;
+    case 3: mutable_ip2_pol_w()->MergeFromString(val); break;
+    case 4: mutable_ip2_pol_b()->MergeFromString(val); break;
+    case 5: mutable_ip3_pol_w()->MergeFromString(val); break;
+    case 6: mutable_ip3_pol_b()->MergeFromString(val); break;
+    case 7: mutable_ip4_pol_w()->MergeFromString(val); break;
+    case 8: add_pol_encoder()->MergeFromString(val); break;
+    case 10: mutable_policy1()->MergeFromString(val); break;
+    case 11: mutable_policy()->MergeFromString(val); break;
+  }
+}
+inline void Weights_PolicyHead::SetVarInt(int field_id, std::uint64_t val) {
+  switch (field_id) {
+    case 9: set_pol_headcount(static_cast<std::uint32_t>(val)); break;
+  }
+}
+inline bool Weights_PolicyHead::has_ip_pol_w() const { return has_ip_pol_w_; }
+inline const Weights_Layer& Weights_PolicyHead::ip_pol_w() const { return ip_pol_w_; }
+inline Weights_Layer* Weights_PolicyHead::mutable_ip_pol_w() {
+  has_ip_pol_w_ = true;
+  return &ip_pol_w_;
+}
+inline bool Weights_PolicyHead::has_ip_pol_b() const { return has_ip_pol_b_; }
+inline const Weights_Layer& Weights_PolicyHead::ip_pol_b() const { return ip_pol_b_; }
+inline Weights_Layer* Weights_PolicyHead::mutable_ip_pol_b() {
+  has_ip_pol_b_ = true;
+  return &ip_pol_b_;
+}
+inline bool Weights_PolicyHead::has_ip2_pol_w() const { return has_ip2_pol_w_; }
+inline const Weights_Layer& Weights_PolicyHead::ip2_pol_w() const { return ip2_pol_w_; }
+inline Weights_Layer* Weights_PolicyHead::mutable_ip2_pol_w() {
+  has_ip2_pol_w_ = true;
+  return &ip2_pol_w_;
+}
+inline bool Weights_PolicyHead::has_ip2_pol_b() const { return has_ip2_pol_b_; }
+inline const Weights_Layer& Weights_PolicyHead::ip2_pol_b() const { return ip2_pol_b_; }
+inline Weights_Layer* Weights_PolicyHead::mutable_ip2_pol_b() {
+  has_ip2_pol_b_ = true;
+  return &ip2_pol_b_;
+}
+inline bool Weights_PolicyHead::has_ip3_pol_w() const { return has_ip3_pol_w_; }
+inline const Weights_Layer& Weights_PolicyHead::ip3_pol_w() const { return ip3_pol_w_; }
+inline Weights_Layer* Weights_PolicyHead::mutable_ip3_pol_w() {
+  has_ip3_pol_w_ = true;
+  return &ip3_pol_w_;
+}
+inline bool Weights_PolicyHead::has_ip3_pol_b() const { return has_ip3_pol_b_; }
+inline const Weights_Layer& Weights_PolicyHead::ip3_pol_b() const { return ip3_pol_b_; }
+inline Weights_Layer* Weights_PolicyHead::mutable_ip3_pol_b() {
+  has_ip3_pol_b_ = true;
+  return &ip3_pol_b_;
+}
+inline bool Weights_PolicyHead::has_ip4_pol_w() const { return has_ip4_pol_w_; }
+inline const Weights_Layer& Weights_PolicyHead::ip4_pol_w() const { return ip4_pol_w_; }
+inline Weights_Layer* Weights_PolicyHead::mutable_ip4_pol_w() {
+  has_ip4_pol_w_ = true;
+  return &ip4_pol_w_;
+}
+inline Weights_EncoderLayer* Weights_PolicyHead::add_pol_encoder() { return &pol_encoder_.emplace_back(); }
+inline const std::vector<Weights_EncoderLayer>& Weights_PolicyHead::pol_encoder() const { return pol_encoder_; }
+inline std::vector<Weights_EncoderLayer>* Weights_PolicyHead::mutable_pol_encoder() { return &pol_encoder_; }
+inline const Weights_EncoderLayer& Weights_PolicyHead::pol_encoder(size_t idx) const { return pol_encoder_[idx]; }
+inline Weights_EncoderLayer* Weights_PolicyHead::mutable_pol_encoder(size_t idx) { return &pol_encoder_[idx]; }
+inline size_t Weights_PolicyHead::pol_encoder_size() const { return pol_encoder_.size(); }
+inline bool Weights_PolicyHead::has_pol_headcount() const { return has_pol_headcount_; }
+inline std::uint32_t Weights_PolicyHead::pol_headcount() const { return pol_headcount_; }
+inline void Weights_PolicyHead::set_pol_headcount(std::uint32_t val) {
+  has_pol_headcount_ = true;
+  pol_headcount_ = val;
+}
+inline bool Weights_PolicyHead::has_policy1() const { return has_policy1_; }
+inline const Weights_ConvBlock& Weights_PolicyHead::policy1() const { return policy1_; }
+inline Weights_ConvBlock* Weights_PolicyHead::mutable_policy1() {
+  has_policy1_ = true;
+  return &policy1_;
+}
+inline bool Weights_PolicyHead::has_policy() const { return has_policy_; }
+inline const Weights_ConvBlock& Weights_PolicyHead::policy() const { return policy_; }
+inline Weights_ConvBlock* Weights_PolicyHead::mutable_policy() {
+  has_policy_ = true;
+  return &policy_;
+}
+inline std::string Weights_ValueHead::OutputAsString() const {
+  std::string out;
+  if (has_ip_val_w_) AppendString(1, ip_val_w_.OutputAsString(), &out);
+  if (has_ip_val_b_) AppendString(2, ip_val_b_.OutputAsString(), &out);
+  if (has_ip1_val_w_) AppendString(3, ip1_val_w_.OutputAsString(), &out);
+  if (has_ip1_val_b_) AppendString(4, ip1_val_b_.OutputAsString(), &out);
+  if (has_ip2_val_w_) AppendString(5, ip2_val_w_.OutputAsString(), &out);
+  if (has_ip2_val_b_) AppendString(6, ip2_val_b_.OutputAsString(), &out);
+  if (has_ip_val_err_w_) AppendString(7, ip_val_err_w_.OutputAsString(), &out);
+  if (has_ip_val_err_b_) AppendString(8, ip_val_err_b_.OutputAsString(), &out);
+  if (has_ip_val_cat_w_) AppendString(9, ip_val_cat_w_.OutputAsString(), &out);
+  if (has_ip_val_cat_b_) AppendString(10, ip_val_cat_b_.OutputAsString(), &out);
+  if (has_value_) AppendString(11, value_.OutputAsString(), &out);
+  return out;
+}
+inline std::string Weights_ValueHead::OutputAsJson() const {
+  bool first = true;
+  std::string out = "{";
+  if (has_ip_val_w_) AppendJsonField("ip_val_w", ip_val_w_, &first, &out);
+  if (has_ip_val_b_) AppendJsonField("ip_val_b", ip_val_b_, &first, &out);
+  if (has_ip1_val_w_) AppendJsonField("ip1_val_w", ip1_val_w_, &first, &out);
+  if (has_ip1_val_b_) AppendJsonField("ip1_val_b", ip1_val_b_, &first, &out);
+  if (has_ip2_val_w_) AppendJsonField("ip2_val_w", ip2_val_w_, &first, &out);
+  if (has_ip2_val_b_) AppendJsonField("ip2_val_b", ip2_val_b_, &first, &out);
+  if (has_ip_val_err_w_) AppendJsonField("ip_val_err_w", ip_val_err_w_, &first, &out);
+  if (has_ip_val_err_b_) AppendJsonField("ip_val_err_b", ip_val_err_b_, &first, &out);
+  if (has_ip_val_cat_w_) AppendJsonField("ip_val_cat_w", ip_val_cat_w_, &first, &out);
+  if (has_ip_val_cat_b_) AppendJsonField("ip_val_cat_b", ip_val_cat_b_, &first, &out);
+  if (has_value_) AppendJsonField("value", value_, &first, &out);
+  out += "}";
+  return out;
+}
+inline void Weights_ValueHead::Clear() {
+  has_ip_val_w_ = false;
+  ip_val_w_ = {};
+  has_ip_val_b_ = false;
+  ip_val_b_ = {};
+  has_ip1_val_w_ = false;
+  ip1_val_w_ = {};
+  has_ip1_val_b_ = false;
+  ip1_val_b_ = {};
+  has_ip2_val_w_ = false;
+  ip2_val_w_ = {};
+  has_ip2_val_b_ = false;
+  ip2_val_b_ = {};
+  has_ip_val_err_w_ = false;
+  ip_val_err_w_ = {};
+  has_ip_val_err_b_ = false;
+  ip_val_err_b_ = {};
+  has_ip_val_cat_w_ = false;
+  ip_val_cat_w_ = {};
+  has_ip_val_cat_b_ = false;
+  ip_val_cat_b_ = {};
+  has_value_ = false;
+  value_ = {};
+}
+inline void Weights_ValueHead::SetString(int field_id, std::string_view val) {
+  switch (field_id) {
+    case 1: mutable_ip_val_w()->MergeFromString(val); break;
+    case 2: mutable_ip_val_b()->MergeFromString(val); break;
+    case 3: mutable_ip1_val_w()->MergeFromString(val); break;
+    case 4: mutable_ip1_val_b()->MergeFromString(val); break;
+    case 5: mutable_ip2_val_w()->MergeFromString(val); break;
+    case 6: mutable_ip2_val_b()->MergeFromString(val); break;
+    case 7: mutable_ip_val_err_w()->MergeFromString(val); break;
+    case 8: mutable_ip_val_err_b()->MergeFromString(val); break;
+    case 9: mutable_ip_val_cat_w()->MergeFromString(val); break;
+    case 10: mutable_ip_val_cat_b()->MergeFromString(val); break;
+    case 11: mutable_value()->MergeFromString(val); break;
+  }
+}
+inline bool Weights_ValueHead::has_ip_val_w() const { return has_ip_val_w_; }
+inline const Weights_Layer& Weights_ValueHead::ip_val_w() const { return ip_val_w_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip_val_w() {
+  has_ip_val_w_ = true;
+  return &ip_val_w_;
+}
+inline bool Weights_ValueHead::has_ip_val_b() const { return has_ip_val_b_; }
+inline const Weights_Layer& Weights_ValueHead::ip_val_b() const { return ip_val_b_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip_val_b() {
+  has_ip_val_b_ = true;
+  return &ip_val_b_;
+}
+inline bool Weights_ValueHead::has_ip1_val_w() const { return has_ip1_val_w_; }
+inline const Weights_Layer& Weights_ValueHead::ip1_val_w() const { return ip1_val_w_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip1_val_w() {
+  has_ip1_val_w_ = true;
+  return &ip1_val_w_;
+}
+inline bool Weights_ValueHead::has_ip1_val_b() const { return has_ip1_val_b_; }
+inline const Weights_Layer& Weights_ValueHead::ip1_val_b() const { return ip1_val_b_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip1_val_b() {
+  has_ip1_val_b_ = true;
+  return &ip1_val_b_;
+}
+inline bool Weights_ValueHead::has_ip2_val_w() const { return has_ip2_val_w_; }
+inline const Weights_Layer& Weights_ValueHead::ip2_val_w() const { return ip2_val_w_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip2_val_w() {
+  has_ip2_val_w_ = true;
+  return &ip2_val_w_;
+}
+inline bool Weights_ValueHead::has_ip2_val_b() const { return has_ip2_val_b_; }
+inline const Weights_Layer& Weights_ValueHead::ip2_val_b() const { return ip2_val_b_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip2_val_b() {
+  has_ip2_val_b_ = true;
+  return &ip2_val_b_;
+}
+inline bool Weights_ValueHead::has_ip_val_err_w() const { return has_ip_val_err_w_; }
+inline const Weights_Layer& Weights_ValueHead::ip_val_err_w() const { return ip_val_err_w_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip_val_err_w() {
+  has_ip_val_err_w_ = true;
+  return &ip_val_err_w_;
+}
+inline bool Weights_ValueHead::has_ip_val_err_b() const { return has_ip_val_err_b_; }
+inline const Weights_Layer& Weights_ValueHead::ip_val_err_b() const { return ip_val_err_b_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip_val_err_b() {
+  has_ip_val_err_b_ = true;
+  return &ip_val_err_b_;
+}
+inline bool Weights_ValueHead::has_ip_val_cat_w() const { return has_ip_val_cat_w_; }
+inline const Weights_Layer& Weights_ValueHead::ip_val_cat_w() const { return ip_val_cat_w_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip_val_cat_w() {
+  has_ip_val_cat_w_ = true;
+  return &ip_val_cat_w_;
+}
+inline bool Weights_ValueHead::has_ip_val_cat_b() const { return has_ip_val_cat_b_; }
+inline const Weights_Layer& Weights_ValueHead::ip_val_cat_b() const { return ip_val_cat_b_; }
+inline Weights_Layer* Weights_ValueHead::mutable_ip_val_cat_b() {
+  has_ip_val_cat_b_ = true;
+  return &ip_val_cat_b_;
+}
+inline bool Weights_ValueHead::has_value() const { return has_value_; }
+inline const Weights_ConvBlock& Weights_ValueHead::value() const { return value_; }
+inline Weights_ConvBlock* Weights_ValueHead::mutable_value() {
+  has_value_ = true;
+  return &value_;
+}
+inline std::string Weights_PolicyHeadMap::OutputAsString() const {
+  std::string out;
+  if (has_key_) AppendString(1, key_, &out);
+  if (has_value_) AppendString(2, value_.OutputAsString(), &out);
+  return out;
+}
+inline std::string Weights_PolicyHeadMap::OutputAsJson() const {
+  bool first = true;
+  std::string out = "{";
+  if (has_key_) AppendJsonField("key", key_, &first, &out);
+  if (has_value_) AppendJsonField("value", value_, &first, &out);
+  out += "}";
+  return out;
+}
+inline void Weights_PolicyHeadMap::Clear() {
+  has_key_ = false;
+  key_ = {};
+  has_value_ = false;
+  value_ = {};
+}
+inline void Weights_PolicyHeadMap::SetString(int field_id, std::string_view val) {
+  switch (field_id) {
+    case 1: set_key(val); break;
+    case 2: mutable_value()->MergeFromString(val); break;
+  }
+}
+inline bool Weights_PolicyHeadMap::has_key() const { return has_key_; }
+inline std::string_view Weights_PolicyHeadMap::key() const { return key_; }
+inline void Weights_PolicyHeadMap::set_key(std::string_view val) {
+  has_key_ = true;
+  key_ = val;
+}
+inline bool Weights_PolicyHeadMap::has_value() const { return has_value_; }
+inline const Weights_PolicyHead& Weights_PolicyHeadMap::value() const { return value_; }
+inline Weights_PolicyHead* Weights_PolicyHeadMap::mutable_value() {
+  has_value_ = true;
+  return &value_;
+}
+inline std::string Weights_PolicyHeads::OutputAsString() const {
+  std::string out;
+  if (has_ip_pol_w_) AppendString(1, ip_pol_w_.OutputAsString(), &out);
+  if (has_ip_pol_b_) AppendString(2, ip_pol_b_.OutputAsString(), &out);
+  if (has_vanilla_) AppendString(3, vanilla_.OutputAsString(), &out);
+  if (has_optimistic_st_) AppendString(4, optimistic_st_.OutputAsString(), &out);
+  if (has_soft_) AppendString(5, soft_.OutputAsString(), &out);
+  if (has_opponent_) AppendString(6, opponent_.OutputAsString(), &out);
+  for (const auto& x : policy_head_map_) AppendString(7, x.OutputAsString(), &out);
+  return out;
+}
+inline std::string Weights_PolicyHeads::OutputAsJson() const {
+  bool first = true;
+  std::string out = "{";
+  if (has_ip_pol_w_) AppendJsonField("ip_pol_w", ip_pol_w_, &first, &out);
+  if (has_ip_pol_b_) AppendJsonField("ip_pol_b", ip_pol_b_, &first, &out);
+  if (has_vanilla_) AppendJsonField("vanilla", vanilla_, &first, &out);
+  if (has_optimistic_st_) AppendJsonField("optimistic_st", optimistic_st_, &first, &out);
+  if (has_soft_) AppendJsonField("soft", soft_, &first, &out);
+  if (has_opponent_) AppendJsonField("opponent", opponent_, &first, &out);
+  if (!policy_head_map_.empty()) AppendJsonRepeatedField("policy_head_map", policy_head_map_, &first, &out);
+  out += "}";
+  return out;
+}
+inline void Weights_PolicyHeads::Clear() {
+  has_ip_pol_w_ = false;
+  ip_pol_w_ = {};
+  has_ip_pol_b_ = false;
+  ip_pol_b_ = {};
+  has_vanilla_ = false;
+  vanilla_ = {};
+  has_optimistic_st_ = false;
+  optimistic_st_ = {};
+  has_soft_ = false;
+  soft_ = {};
+  has_opponent_ = false;
+  opponent_ = {};
+  policy_head_map_.clear();
+}
+inline void Weights_PolicyHeads::SetString(int field_id, std::string_view val) {
+  switch (field_id) {
+    case 1: mutable_ip_pol_w()->MergeFromString(val); break;
+    case 2: mutable_ip_pol_b()->MergeFromString(val); break;
+    case 3: mutable_vanilla()->MergeFromString(val); break;
+    case 4: mutable_optimistic_st()->MergeFromString(val); break;
+    case 5: mutable_soft()->MergeFromString(val); break;
+    case 6: mutable_opponent()->MergeFromString(val); break;
+    case 7: add_policy_head_map()->MergeFromString(val); break;
+  }
+}
+inline bool Weights_PolicyHeads::has_ip_pol_w() const { return has_ip_pol_w_; }
+inline const Weights_Layer& Weights_PolicyHeads::ip_pol_w() const { return ip_pol_w_; }
+inline Weights_Layer* Weights_PolicyHeads::mutable_ip_pol_w() {
+  has_ip_pol_w_ = true;
+  return &ip_pol_w_;
+}
+inline bool Weights_PolicyHeads::has_ip_pol_b() const { return has_ip_pol_b_; }
+inline const Weights_Layer& Weights_PolicyHeads::ip_pol_b() const { return ip_pol_b_; }
+inline Weights_Layer* Weights_PolicyHeads::mutable_ip_pol_b() {
+  has_ip_pol_b_ = true;
+  return &ip_pol_b_;
+}
+inline bool Weights_PolicyHeads::has_vanilla() const { return has_vanilla_; }
+inline const Weights_PolicyHead& Weights_PolicyHeads::vanilla() const { return vanilla_; }
+inline Weights_PolicyHead* Weights_PolicyHeads::mutable_vanilla() {
+  has_vanilla_ = true;
+  return &vanilla_;
+}
+inline bool Weights_PolicyHeads::has_optimistic_st() const { return has_optimistic_st_; }
+inline const Weights_PolicyHead& Weights_PolicyHeads::optimistic_st() const { return optimistic_st_; }
+inline Weights_PolicyHead* Weights_PolicyHeads::mutable_optimistic_st() {
+  has_optimistic_st_ = true;
+  return &optimistic_st_;
+}
+inline bool Weights_PolicyHeads::has_soft() const { return has_soft_; }
+inline const Weights_PolicyHead& Weights_PolicyHeads::soft() const { return soft_; }
+inline Weights_PolicyHead* Weights_PolicyHeads::mutable_soft() {
+  has_soft_ = true;
+  return &soft_;
+}
+inline bool Weights_PolicyHeads::has_opponent() const { return has_opponent_; }
+inline const Weights_PolicyHead& Weights_PolicyHeads::opponent() const { return opponent_; }
+inline Weights_PolicyHead* Weights_PolicyHeads::mutable_opponent() {
+  has_opponent_ = true;
+  return &opponent_;
+}
+inline Weights_PolicyHeadMap* Weights_PolicyHeads::add_policy_head_map() { return &policy_head_map_.emplace_back(); }
+inline const std::vector<Weights_PolicyHeadMap>& Weights_PolicyHeads::policy_head_map() const { return policy_head_map_; }
+inline std::vector<Weights_PolicyHeadMap>* Weights_PolicyHeads::mutable_policy_head_map() { return &policy_head_map_; }
+inline const Weights_PolicyHeadMap& Weights_PolicyHeads::policy_head_map(size_t idx) const { return policy_head_map_[idx]; }
+inline Weights_PolicyHeadMap* Weights_PolicyHeads::mutable_policy_head_map(size_t idx) { return &policy_head_map_[idx]; }
+inline size_t Weights_PolicyHeads::policy_head_map_size() const { return policy_head_map_.size(); }
+inline std::string Weights_ValueHeadMap::OutputAsString() const {
+  std::string out;
+  if (has_key_) AppendString(1, key_, &out);
+  if (has_value_) AppendString(2, value_.OutputAsString(), &out);
+  return out;
+}
+inline std::string Weights_ValueHeadMap::OutputAsJson() const {
+  bool first = true;
+  std::string out = "{";
+  if (has_key_) AppendJsonField("key", key_, &first, &out);
+  if (has_value_) AppendJsonField("value", value_, &first, &out);
+  out += "}";
+  return out;
+}
+inline void Weights_ValueHeadMap::Clear() {
+  has_key_ = false;
+  key_ = {};
+  has_value_ = false;
+  value_ = {};
+}
+inline void Weights_ValueHeadMap::SetString(int field_id, std::string_view val) {
+  switch (field_id) {
+    case 1: set_key(val); break;
+    case 2: mutable_value()->MergeFromString(val); break;
+  }
+}
+inline bool Weights_ValueHeadMap::has_key() const { return has_key_; }
+inline std::string_view Weights_ValueHeadMap::key() const { return key_; }
+inline void Weights_ValueHeadMap::set_key(std::string_view val) {
+  has_key_ = true;
+  key_ = val;
+}
+inline bool Weights_ValueHeadMap::has_value() const { return has_value_; }
+inline const Weights_ValueHead& Weights_ValueHeadMap::value() const { return value_; }
+inline Weights_ValueHead* Weights_ValueHeadMap::mutable_value() {
+  has_value_ = true;
+  return &value_;
+}
+inline std::string Weights_ValueHeads::OutputAsString() const {
+  std::string out;
+  if (has_winner_) AppendString(1, winner_.OutputAsString(), &out);
+  if (has_q_) AppendString(2, q_.OutputAsString(), &out);
+  if (has_st_) AppendString(3, st_.OutputAsString(), &out);
+  for (const auto& x : value_head_map_) AppendString(4, x.OutputAsString(), &out);
+  return out;
+}
+inline std::string Weights_ValueHeads::OutputAsJson() const {
+  bool first = true;
+  std::string out = "{";
+  if (has_winner_) AppendJsonField("winner", winner_, &first, &out);
+  if (has_q_) AppendJsonField("q", q_, &first, &out);
+  if (has_st_) AppendJsonField("st", st_, &first, &out);
+  if (!value_head_map_.empty()) AppendJsonRepeatedField("value_head_map", value_head_map_, &first, &out);
+  out += "}";
+  return out;
+}
+inline void Weights_ValueHeads::Clear() {
+  has_winner_ = false;
+  winner_ = {};
+  has_q_ = false;
+  q_ = {};
+  has_st_ = false;
+  st_ = {};
+  value_head_map_.clear();
+}
+inline void Weights_ValueHeads::SetString(int field_id, std::string_view val) {
+  switch (field_id) {
+    case 1: mutable_winner()->MergeFromString(val); break;
+    case 2: mutable_q()->MergeFromString(val); break;
+    case 3: mutable_st()->MergeFromString(val); break;
+    case 4: add_value_head_map()->MergeFromString(val); break;
+  }
+}
+inline bool Weights_ValueHeads::has_winner() const { return has_winner_; }
+inline const Weights_ValueHead& Weights_ValueHeads::winner() const { return winner_; }
+inline Weights_ValueHead* Weights_ValueHeads::mutable_winner() {
+  has_winner_ = true;
+  return &winner_;
+}
+inline bool Weights_ValueHeads::has_q() const { return has_q_; }
+inline const Weights_ValueHead& Weights_ValueHeads::q() const { return q_; }
+inline Weights_ValueHead* Weights_ValueHeads::mutable_q() {
+  has_q_ = true;
+  return &q_;
+}
+inline bool Weights_ValueHeads::has_st() const { return has_st_; }
+inline const Weights_ValueHead& Weights_ValueHeads::st() const { return st_; }
+inline Weights_ValueHead* Weights_ValueHeads::mutable_st() {
+  has_st_ = true;
+  return &st_;
+}
+inline Weights_ValueHeadMap* Weights_ValueHeads::add_value_head_map() { return &value_head_map_.emplace_back(); }
+inline const std::vector<Weights_ValueHeadMap>& Weights_ValueHeads::value_head_map() const { return value_head_map_; }
+inline std::vector<Weights_ValueHeadMap>* Weights_ValueHeads::mutable_value_head_map() { return &value_head_map_; }
+inline const Weights_ValueHeadMap& Weights_ValueHeads::value_head_map(size_t idx) const { return value_head_map_[idx]; }
+inline Weights_ValueHeadMap* Weights_ValueHeads::mutable_value_head_map(size_t idx) { return &value_head_map_[idx]; }
+inline size_t Weights_ValueHeads::value_head_map_size() const { return value_head_map_.size(); }
 inline std::string Weights::OutputAsString() const {
   std::string out;
   if (has_input_) AppendString(1, input_.OutputAsString(), &out);
@@ -2004,6 +2930,15 @@ inline std::string Weights::OutputAsString() const {
   if (has_ip_add_gate_) AppendString(34, ip_add_gate_.OutputAsString(), &out);
   if (has_smolgen_w_) AppendString(35, smolgen_w_.OutputAsString(), &out);
   if (has_smolgen_b_) AppendString(36, smolgen_b_.OutputAsString(), &out);
+  if (has_ip_emb_preproc_w_) AppendString(37, ip_emb_preproc_w_.OutputAsString(), &out);
+  if (has_ip_emb_preproc_b_) AppendString(38, ip_emb_preproc_b_.OutputAsString(), &out);
+  if (has_ip_emb_ln_gammas_) AppendString(39, ip_emb_ln_gammas_.OutputAsString(), &out);
+  if (has_ip_emb_ln_betas_) AppendString(40, ip_emb_ln_betas_.OutputAsString(), &out);
+  if (has_ip_emb_ffn_) AppendString(41, ip_emb_ffn_.OutputAsString(), &out);
+  if (has_ip_emb_ffn_ln_gammas_) AppendString(42, ip_emb_ffn_ln_gammas_.OutputAsString(), &out);
+  if (has_ip_emb_ffn_ln_betas_) AppendString(43, ip_emb_ffn_ln_betas_.OutputAsString(), &out);
+  if (has_value_heads_) AppendString(44, value_heads_.OutputAsString(), &out);
+  if (has_policy_heads_) AppendString(45, policy_heads_.OutputAsString(), &out);
   return out;
 }
 inline std::string Weights::OutputAsJson() const {
@@ -2011,10 +2946,17 @@ inline std::string Weights::OutputAsJson() const {
   std::string out = "{";
   if (has_input_) AppendJsonField("input", input_, &first, &out);
   if (!residual_.empty()) AppendJsonRepeatedField("residual", residual_, &first, &out);
+  if (has_ip_emb_preproc_w_) AppendJsonField("ip_emb_preproc_w", ip_emb_preproc_w_, &first, &out);
+  if (has_ip_emb_preproc_b_) AppendJsonField("ip_emb_preproc_b", ip_emb_preproc_b_, &first, &out);
   if (has_ip_emb_w_) AppendJsonField("ip_emb_w", ip_emb_w_, &first, &out);
   if (has_ip_emb_b_) AppendJsonField("ip_emb_b", ip_emb_b_, &first, &out);
+  if (has_ip_emb_ln_gammas_) AppendJsonField("ip_emb_ln_gammas", ip_emb_ln_gammas_, &first, &out);
+  if (has_ip_emb_ln_betas_) AppendJsonField("ip_emb_ln_betas", ip_emb_ln_betas_, &first, &out);
   if (has_ip_mult_gate_) AppendJsonField("ip_mult_gate", ip_mult_gate_, &first, &out);
   if (has_ip_add_gate_) AppendJsonField("ip_add_gate", ip_add_gate_, &first, &out);
+  if (has_ip_emb_ffn_) AppendJsonField("ip_emb_ffn", ip_emb_ffn_, &first, &out);
+  if (has_ip_emb_ffn_ln_gammas_) AppendJsonField("ip_emb_ffn_ln_gammas", ip_emb_ffn_ln_gammas_, &first, &out);
+  if (has_ip_emb_ffn_ln_betas_) AppendJsonField("ip_emb_ffn_ln_betas", ip_emb_ffn_ln_betas_, &first, &out);
   if (!encoder_.empty()) AppendJsonRepeatedField("encoder", encoder_, &first, &out);
   if (has_headcount_) AppendJsonField("headcount", headcount_, &first, &out);
   if (!pol_encoder_.empty()) AppendJsonRepeatedField("pol_encoder", pol_encoder_, &first, &out);
@@ -2035,6 +2977,8 @@ inline std::string Weights::OutputAsJson() const {
   if (has_ip1_val_b_) AppendJsonField("ip1_val_b", ip1_val_b_, &first, &out);
   if (has_ip2_val_w_) AppendJsonField("ip2_val_w", ip2_val_w_, &first, &out);
   if (has_ip2_val_b_) AppendJsonField("ip2_val_b", ip2_val_b_, &first, &out);
+  if (has_value_heads_) AppendJsonField("value_heads", value_heads_, &first, &out);
+  if (has_policy_heads_) AppendJsonField("policy_heads", policy_heads_, &first, &out);
   if (has_moves_left_) AppendJsonField("moves_left", moves_left_, &first, &out);
   if (has_ip_mov_w_) AppendJsonField("ip_mov_w", ip_mov_w_, &first, &out);
   if (has_ip_mov_b_) AppendJsonField("ip_mov_b", ip_mov_b_, &first, &out);
@@ -2051,14 +2995,28 @@ inline void Weights::Clear() {
   has_input_ = false;
   input_ = {};
   residual_.clear();
+  has_ip_emb_preproc_w_ = false;
+  ip_emb_preproc_w_ = {};
+  has_ip_emb_preproc_b_ = false;
+  ip_emb_preproc_b_ = {};
   has_ip_emb_w_ = false;
   ip_emb_w_ = {};
   has_ip_emb_b_ = false;
   ip_emb_b_ = {};
+  has_ip_emb_ln_gammas_ = false;
+  ip_emb_ln_gammas_ = {};
+  has_ip_emb_ln_betas_ = false;
+  ip_emb_ln_betas_ = {};
   has_ip_mult_gate_ = false;
   ip_mult_gate_ = {};
   has_ip_add_gate_ = false;
   ip_add_gate_ = {};
+  has_ip_emb_ffn_ = false;
+  ip_emb_ffn_ = {};
+  has_ip_emb_ffn_ln_gammas_ = false;
+  ip_emb_ffn_ln_gammas_ = {};
+  has_ip_emb_ffn_ln_betas_ = false;
+  ip_emb_ffn_ln_betas_ = {};
   encoder_.clear();
   has_headcount_ = false;
   headcount_ = {};
@@ -2097,6 +3055,10 @@ inline void Weights::Clear() {
   ip2_val_w_ = {};
   has_ip2_val_b_ = false;
   ip2_val_b_ = {};
+  has_value_heads_ = false;
+  value_heads_ = {};
+  has_policy_heads_ = false;
+  policy_heads_ = {};
   has_moves_left_ = false;
   moves_left_ = {};
   has_ip_mov_w_ = false;
@@ -2120,10 +3082,17 @@ inline void Weights::SetString(int field_id, std::string_view val) {
   switch (field_id) {
     case 1: mutable_input()->MergeFromString(val); break;
     case 2: add_residual()->MergeFromString(val); break;
+    case 37: mutable_ip_emb_preproc_w()->MergeFromString(val); break;
+    case 38: mutable_ip_emb_preproc_b()->MergeFromString(val); break;
     case 25: mutable_ip_emb_w()->MergeFromString(val); break;
     case 26: mutable_ip_emb_b()->MergeFromString(val); break;
+    case 39: mutable_ip_emb_ln_gammas()->MergeFromString(val); break;
+    case 40: mutable_ip_emb_ln_betas()->MergeFromString(val); break;
     case 33: mutable_ip_mult_gate()->MergeFromString(val); break;
     case 34: mutable_ip_add_gate()->MergeFromString(val); break;
+    case 41: mutable_ip_emb_ffn()->MergeFromString(val); break;
+    case 42: mutable_ip_emb_ffn_ln_gammas()->MergeFromString(val); break;
+    case 43: mutable_ip_emb_ffn_ln_betas()->MergeFromString(val); break;
     case 27: add_encoder()->MergeFromString(val); break;
     case 21: add_pol_encoder()->MergeFromString(val); break;
     case 11: mutable_policy1()->MergeFromString(val); break;
@@ -2142,6 +3111,8 @@ inline void Weights::SetString(int field_id, std::string_view val) {
     case 8: mutable_ip1_val_b()->MergeFromString(val); break;
     case 9: mutable_ip2_val_w()->MergeFromString(val); break;
     case 10: mutable_ip2_val_b()->MergeFromString(val); break;
+    case 44: mutable_value_heads()->MergeFromString(val); break;
+    case 45: mutable_policy_heads()->MergeFromString(val); break;
     case 12: mutable_moves_left()->MergeFromString(val); break;
     case 31: mutable_ip_mov_w()->MergeFromString(val); break;
     case 32: mutable_ip_mov_b()->MergeFromString(val); break;
@@ -2167,8 +3138,22 @@ inline Weights_ConvBlock* Weights::mutable_input() {
 }
 inline Weights_Residual* Weights::add_residual() { return &residual_.emplace_back(); }
 inline const std::vector<Weights_Residual>& Weights::residual() const { return residual_; }
+inline std::vector<Weights_Residual>* Weights::mutable_residual() { return &residual_; }
 inline const Weights_Residual& Weights::residual(size_t idx) const { return residual_[idx]; }
+inline Weights_Residual* Weights::mutable_residual(size_t idx) { return &residual_[idx]; }
 inline size_t Weights::residual_size() const { return residual_.size(); }
+inline bool Weights::has_ip_emb_preproc_w() const { return has_ip_emb_preproc_w_; }
+inline const Weights_Layer& Weights::ip_emb_preproc_w() const { return ip_emb_preproc_w_; }
+inline Weights_Layer* Weights::mutable_ip_emb_preproc_w() {
+  has_ip_emb_preproc_w_ = true;
+  return &ip_emb_preproc_w_;
+}
+inline bool Weights::has_ip_emb_preproc_b() const { return has_ip_emb_preproc_b_; }
+inline const Weights_Layer& Weights::ip_emb_preproc_b() const { return ip_emb_preproc_b_; }
+inline Weights_Layer* Weights::mutable_ip_emb_preproc_b() {
+  has_ip_emb_preproc_b_ = true;
+  return &ip_emb_preproc_b_;
+}
 inline bool Weights::has_ip_emb_w() const { return has_ip_emb_w_; }
 inline const Weights_Layer& Weights::ip_emb_w() const { return ip_emb_w_; }
 inline Weights_Layer* Weights::mutable_ip_emb_w() {
@@ -2180,6 +3165,18 @@ inline const Weights_Layer& Weights::ip_emb_b() const { return ip_emb_b_; }
 inline Weights_Layer* Weights::mutable_ip_emb_b() {
   has_ip_emb_b_ = true;
   return &ip_emb_b_;
+}
+inline bool Weights::has_ip_emb_ln_gammas() const { return has_ip_emb_ln_gammas_; }
+inline const Weights_Layer& Weights::ip_emb_ln_gammas() const { return ip_emb_ln_gammas_; }
+inline Weights_Layer* Weights::mutable_ip_emb_ln_gammas() {
+  has_ip_emb_ln_gammas_ = true;
+  return &ip_emb_ln_gammas_;
+}
+inline bool Weights::has_ip_emb_ln_betas() const { return has_ip_emb_ln_betas_; }
+inline const Weights_Layer& Weights::ip_emb_ln_betas() const { return ip_emb_ln_betas_; }
+inline Weights_Layer* Weights::mutable_ip_emb_ln_betas() {
+  has_ip_emb_ln_betas_ = true;
+  return &ip_emb_ln_betas_;
 }
 inline bool Weights::has_ip_mult_gate() const { return has_ip_mult_gate_; }
 inline const Weights_Layer& Weights::ip_mult_gate() const { return ip_mult_gate_; }
@@ -2193,9 +3190,29 @@ inline Weights_Layer* Weights::mutable_ip_add_gate() {
   has_ip_add_gate_ = true;
   return &ip_add_gate_;
 }
+inline bool Weights::has_ip_emb_ffn() const { return has_ip_emb_ffn_; }
+inline const Weights_FFN& Weights::ip_emb_ffn() const { return ip_emb_ffn_; }
+inline Weights_FFN* Weights::mutable_ip_emb_ffn() {
+  has_ip_emb_ffn_ = true;
+  return &ip_emb_ffn_;
+}
+inline bool Weights::has_ip_emb_ffn_ln_gammas() const { return has_ip_emb_ffn_ln_gammas_; }
+inline const Weights_Layer& Weights::ip_emb_ffn_ln_gammas() const { return ip_emb_ffn_ln_gammas_; }
+inline Weights_Layer* Weights::mutable_ip_emb_ffn_ln_gammas() {
+  has_ip_emb_ffn_ln_gammas_ = true;
+  return &ip_emb_ffn_ln_gammas_;
+}
+inline bool Weights::has_ip_emb_ffn_ln_betas() const { return has_ip_emb_ffn_ln_betas_; }
+inline const Weights_Layer& Weights::ip_emb_ffn_ln_betas() const { return ip_emb_ffn_ln_betas_; }
+inline Weights_Layer* Weights::mutable_ip_emb_ffn_ln_betas() {
+  has_ip_emb_ffn_ln_betas_ = true;
+  return &ip_emb_ffn_ln_betas_;
+}
 inline Weights_EncoderLayer* Weights::add_encoder() { return &encoder_.emplace_back(); }
 inline const std::vector<Weights_EncoderLayer>& Weights::encoder() const { return encoder_; }
+inline std::vector<Weights_EncoderLayer>* Weights::mutable_encoder() { return &encoder_; }
 inline const Weights_EncoderLayer& Weights::encoder(size_t idx) const { return encoder_[idx]; }
+inline Weights_EncoderLayer* Weights::mutable_encoder(size_t idx) { return &encoder_[idx]; }
 inline size_t Weights::encoder_size() const { return encoder_.size(); }
 inline bool Weights::has_headcount() const { return has_headcount_; }
 inline std::uint32_t Weights::headcount() const { return headcount_; }
@@ -2205,7 +3222,9 @@ inline void Weights::set_headcount(std::uint32_t val) {
 }
 inline Weights_EncoderLayer* Weights::add_pol_encoder() { return &pol_encoder_.emplace_back(); }
 inline const std::vector<Weights_EncoderLayer>& Weights::pol_encoder() const { return pol_encoder_; }
+inline std::vector<Weights_EncoderLayer>* Weights::mutable_pol_encoder() { return &pol_encoder_; }
 inline const Weights_EncoderLayer& Weights::pol_encoder(size_t idx) const { return pol_encoder_[idx]; }
+inline Weights_EncoderLayer* Weights::mutable_pol_encoder(size_t idx) { return &pol_encoder_[idx]; }
 inline size_t Weights::pol_encoder_size() const { return pol_encoder_.size(); }
 inline bool Weights::has_pol_headcount() const { return has_pol_headcount_; }
 inline std::uint32_t Weights::pol_headcount() const { return pol_headcount_; }
@@ -2308,6 +3327,18 @@ inline const Weights_Layer& Weights::ip2_val_b() const { return ip2_val_b_; }
 inline Weights_Layer* Weights::mutable_ip2_val_b() {
   has_ip2_val_b_ = true;
   return &ip2_val_b_;
+}
+inline bool Weights::has_value_heads() const { return has_value_heads_; }
+inline const Weights_ValueHeads& Weights::value_heads() const { return value_heads_; }
+inline Weights_ValueHeads* Weights::mutable_value_heads() {
+  has_value_heads_ = true;
+  return &value_heads_;
+}
+inline bool Weights::has_policy_heads() const { return has_policy_heads_; }
+inline const Weights_PolicyHeads& Weights::policy_heads() const { return policy_heads_; }
+inline Weights_PolicyHeads* Weights::mutable_policy_heads() {
+  has_policy_heads_ = true;
+  return &policy_heads_;
 }
 inline bool Weights::has_moves_left() const { return has_moves_left_; }
 inline const Weights_ConvBlock& Weights::moves_left() const { return moves_left_; }
@@ -2464,6 +3495,7 @@ inline std::string NetworkFormat::OutputAsString() const {
   if (has_default_activation_) AppendVarInt(7, default_activation_, &out);
   if (has_smolgen_activation_) AppendVarInt(8, smolgen_activation_, &out);
   if (has_ffn_activation_) AppendVarInt(9, ffn_activation_, &out);
+  if (has_input_embedding_) AppendVarInt(10, input_embedding_, &out);
   return out;
 }
 inline std::string NetworkFormat::OutputAsJson() const {
@@ -2478,6 +3510,7 @@ inline std::string NetworkFormat::OutputAsJson() const {
   if (has_default_activation_) AppendJsonField("default_activation", NetworkFormat_DefaultActivation_Name(default_activation_), &first, &out);
   if (has_smolgen_activation_) AppendJsonField("smolgen_activation", NetworkFormat_ActivationFunction_Name(smolgen_activation_), &first, &out);
   if (has_ffn_activation_) AppendJsonField("ffn_activation", NetworkFormat_ActivationFunction_Name(ffn_activation_), &first, &out);
+  if (has_input_embedding_) AppendJsonField("input_embedding", NetworkFormat_InputEmbeddingFormat_Name(input_embedding_), &first, &out);
   out += "}";
   return out;
 }
@@ -2500,6 +3533,8 @@ inline void NetworkFormat::Clear() {
   smolgen_activation_ = {};
   has_ffn_activation_ = false;
   ffn_activation_ = {};
+  has_input_embedding_ = false;
+  input_embedding_ = {};
 }
 inline void NetworkFormat::SetVarInt(int field_id, std::uint64_t val) {
   switch (field_id) {
@@ -2512,6 +3547,7 @@ inline void NetworkFormat::SetVarInt(int field_id, std::uint64_t val) {
     case 7: set_default_activation(static_cast<NetworkFormat_DefaultActivation>(val)); break;
     case 8: set_smolgen_activation(static_cast<NetworkFormat_ActivationFunction>(val)); break;
     case 9: set_ffn_activation(static_cast<NetworkFormat_ActivationFunction>(val)); break;
+    case 10: set_input_embedding(static_cast<NetworkFormat_InputEmbeddingFormat>(val)); break;
   }
 }
 inline bool NetworkFormat::has_input() const { return has_input_; }
@@ -2567,6 +3603,12 @@ inline NetworkFormat_ActivationFunction NetworkFormat::ffn_activation() const { 
 inline void NetworkFormat::set_ffn_activation(NetworkFormat_ActivationFunction val) {
   has_ffn_activation_ = true;
   ffn_activation_ = val;
+}
+inline bool NetworkFormat::has_input_embedding() const { return has_input_embedding_; }
+inline NetworkFormat_InputEmbeddingFormat NetworkFormat::input_embedding() const { return input_embedding_; }
+inline void NetworkFormat::set_input_embedding(NetworkFormat_InputEmbeddingFormat val) {
+  has_input_embedding_ = true;
+  input_embedding_ = val;
 }
 inline std::string Format::OutputAsString() const {
   std::string out;
